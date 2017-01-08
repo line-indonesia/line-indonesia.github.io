@@ -53,6 +53,11 @@ Maka informasi yang dapat diambil dari database anda adalah sebagai berikut:
 - Port database: _5432_
 - Nama database: _a1b2c3d4e5_
 
+Untuk mempercepat proses pengambilan nama database, anda dapat mengeksekusi perintah berikut:
+
+```bash
+$ heroku run "printenv | grep ^DATABASE_URL | cut -d'/' -f4"
+```
 
 ## Mengakses database
 Untuk mengakses database anda, silakhan anda masuk melalui `psql` dengan memasukkan perintah:

@@ -11,7 +11,7 @@ Ada dua alternatif hasil jika request dikirim dengan menggunakan method GET:
 - Dengan menambahkan parameter `name`, maka akan dikembalikan isi dari tabel `phonebook` yang namanya terkandung pada parameter tersebut.
 
 ### `POST /phonebook`
-Request dengan mehod POST harus dikirimkan dengan body berisi JSON dengan format sebagai berikut:
+Request dengan method POST harus dikirimkan dengan body berisi JSON dengan format sebagai berikut:
 
 |Key|Keterangan|
 |---|---|
