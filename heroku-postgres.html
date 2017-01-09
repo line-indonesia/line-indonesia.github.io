@@ -121,6 +121,10 @@
 </li>
 </ul>
 
+<p>Untuk mempercepat proses pengambilan nama database, anda dapat mengeksekusi perintah berikut:</p>
+
+<div class="highlight highlight-source-shell"><pre>$ heroku run <span class="pl-s"><span class="pl-pds">"</span>printenv | grep ^DATABASE_URL | cut -d'/' -f4<span class="pl-pds">"</span></span></pre></div>
+
 <h2>
 <a id="user-content-mengakses-database" class="anchor" href="#mengakses-database" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Mengakses database</h2>
 
