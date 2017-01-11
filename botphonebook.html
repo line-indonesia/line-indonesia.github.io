@@ -104,6 +104,96 @@
 );</pre></div>
 </li>
 <li>
+<p>Menyiapkan DAO di sisi client</p>
+
+<div class="highlight highlight-source-java"><pre><span class="pl-k">public</span> <span class="pl-k">interface</span> <span class="pl-en">PersonDao</span>
+{
+    <span class="pl-k">public</span> <span class="pl-smi">Long</span> <span class="pl-en">post</span>(<span class="pl-smi">Person</span> <span class="pl-v">aPerson</span>);
+    <span class="pl-k">public</span> <span class="pl-k">List&lt;<span class="pl-smi">Person</span>&gt;</span> <span class="pl-en">get</span>();
+    <span class="pl-k">public</span> <span class="pl-k">List&lt;<span class="pl-smi">Person</span>&gt;</span> <span class="pl-en">getByName</span>(<span class="pl-smi">String</span> <span class="pl-v">aName</span>);
+    <span class="pl-k">public</span> <span class="pl-k">int</span> <span class="pl-en">registerPerson</span>(<span class="pl-smi">String</span> <span class="pl-v">aName</span>, <span class="pl-smi">String</span> <span class="pl-v">aPhoneNumber</span>);
+};
+</pre></div>
+</li>
+<li>
+<p>Melakukan query menggunakan DAO</p>
+
+<div class="highlight highlight-source-java"><pre><span class="pl-k">private</span> <span class="pl-k">final</span> <span class="pl-k">static</span> <span class="pl-smi">String</span> <span class="pl-c1">SQL_REGISTER</span><span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">"</span>INSERT INTO phonebook (name, phone_number) VALUES (?, ?);<span class="pl-pds">"</span></span>;
+
+<span class="pl-k">public</span> <span class="pl-k">int</span> registerPerson(<span class="pl-smi">String</span> aName, <span class="pl-smi">String</span> aPhoneNumber)
+{
+    <span class="pl-k">return</span> mJdbc<span class="pl-k">.</span>update(<span class="pl-c1">SQL_REGISTER</span>, <span class="pl-k">new</span> <span class="pl-smi">Object</span>[]{aName, aPhoneNumber});
+}</pre></div>
+
+<div class="highlight highlight-source-java"><pre><span class="pl-k">public</span> <span class="pl-smi">Long</span> post(<span class="pl-smi">Person</span> aPerson)
+{
+    <span class="pl-smi">SimpleJdbcInsert</span> insert<span class="pl-k">=</span><span class="pl-k">new</span> <span class="pl-smi">SimpleJdbcInsert</span>(mJdbc)
+        .withTableName(<span class="pl-s"><span class="pl-pds">"</span>phonebook<span class="pl-pds">"</span></span>)
+        .usingGeneratedKeyColumns(<span class="pl-s"><span class="pl-pds">"</span>id<span class="pl-pds">"</span></span>);
+    <span class="pl-k">Map&lt;<span class="pl-smi">String</span>, <span class="pl-smi">Object</span>&gt;</span> fields<span class="pl-k">=</span><span class="pl-k">new</span> <span class="pl-k">HashMap&lt;<span class="pl-smi">String</span>, <span class="pl-smi">Object</span>&gt;</span>();
+    fields<span class="pl-k">.</span>put(<span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>, aPerson<span class="pl-k">.</span>name);
+    fields<span class="pl-k">.</span>put(<span class="pl-s"><span class="pl-pds">"</span>phone_number<span class="pl-pds">"</span></span>, aPerson<span class="pl-k">.</span>phoneNumber);
+    <span class="pl-k">return</span> insert<span class="pl-k">.</span>executeAndReturnKey(fields)<span class="pl-k">.</span>longValue();
+}</pre></div>
+
+<div class="highlight highlight-source-java"><pre><span class="pl-k">private</span> <span class="pl-k">final</span> <span class="pl-k">static</span> <span class="pl-smi">String</span> <span class="pl-c1">SQL_SELECT_ALL</span><span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">"</span>SELECT id, name, phone_number FROM phonebook<span class="pl-pds">"</span></span>;
+
+<span class="pl-k">private</span> <span class="pl-k">final</span> <span class="pl-k">static</span> <span class="pl-k">ResultSetExtractor&lt; <span class="pl-k">List&lt;<span class="pl-smi">Person</span>&gt;</span> &gt;</span> <span class="pl-c1">MULTIPLE_RS_EXTRACTOR</span><span class="pl-k">=</span><span class="pl-k">new</span> <span class="pl-k">ResultSetExtractor&lt; <span class="pl-k">List&lt;<span class="pl-smi">Person</span>&gt;</span> &gt;</span>()
+{
+    <span class="pl-k">@Override</span>
+    <span class="pl-k">public</span> <span class="pl-k">List&lt;<span class="pl-smi">Person</span>&gt;</span> extractData(<span class="pl-smi">ResultSet</span> aRs)
+        throws <span class="pl-smi">SQLException</span>, <span class="pl-smi">DataAccessException</span>
+    {
+        <span class="pl-k">List&lt;<span class="pl-smi">Person</span>&gt;</span> list<span class="pl-k">=</span><span class="pl-k">new</span> <span class="pl-k">Vector&lt;<span class="pl-smi">Person</span>&gt;</span>();
+        <span class="pl-k">while</span>(aRs<span class="pl-k">.</span>next())
+        {
+            <span class="pl-smi">Person</span> p<span class="pl-k">=</span><span class="pl-k">new</span> <span class="pl-smi">Person</span>(
+            aRs<span class="pl-k">.</span>getLong(<span class="pl-s"><span class="pl-pds">"</span>id<span class="pl-pds">"</span></span>),
+            aRs<span class="pl-k">.</span>getString(<span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>),
+            aRs<span class="pl-k">.</span>getString(<span class="pl-s"><span class="pl-pds">"</span>phone_number<span class="pl-pds">"</span></span>));
+            list<span class="pl-k">.</span>add(p);
+        }
+        <span class="pl-k">return</span> list;
+    }
+};
+
+<span class="pl-k">public</span> <span class="pl-k">List&lt;<span class="pl-smi">Person</span>&gt;</span> get()
+{
+    <span class="pl-k">return</span> mJdbc<span class="pl-k">.</span>query(<span class="pl-c1">SQL_SELECT_ALL</span>, <span class="pl-c1">MULTIPLE_RS_EXTRACTOR</span>);
+}</pre></div>
+
+<div class="highlight highlight-source-java"><pre><span class="pl-k">private</span> <span class="pl-k">final</span> <span class="pl-k">static</span> <span class="pl-smi">String</span> <span class="pl-c1">SQL_SELECT_ALL</span><span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">"</span>SELECT id, name, phone_number FROM phonebook<span class="pl-pds">"</span></span>;
+<span class="pl-k">private</span> <span class="pl-k">final</span> <span class="pl-k">static</span> <span class="pl-smi">String</span> <span class="pl-c1">SQL_GET_BY_NAME</span><span class="pl-k">=</span><span class="pl-c1">SQL_SELECT_ALL</span> <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">"</span> WHERE LOWER(name) LIKE LOWER(?);<span class="pl-pds">"</span></span>;
+
+<span class="pl-k">private</span> <span class="pl-k">final</span> <span class="pl-k">static</span> <span class="pl-k">ResultSetExtractor&lt;<span class="pl-smi">Person</span>&gt;</span> <span class="pl-c1">SINGLE_RS_EXTRACTOR</span><span class="pl-k">=</span><span class="pl-k">new</span> <span class="pl-k">ResultSetExtractor&lt;<span class="pl-smi">Person</span>&gt;</span>()
+{
+    <span class="pl-k">@Override</span>
+    <span class="pl-k">public</span> <span class="pl-smi">Person</span> extractData(<span class="pl-smi">ResultSet</span> aRs)
+            throws <span class="pl-smi">SQLException</span>, <span class="pl-smi">DataAccessException</span>
+    {
+        <span class="pl-k">while</span>(aRs<span class="pl-k">.</span>next())
+        {
+            <span class="pl-smi">Person</span> p<span class="pl-k">=</span><span class="pl-k">new</span> <span class="pl-smi">Person</span>(
+                aRs<span class="pl-k">.</span>getLong(<span class="pl-s"><span class="pl-pds">"</span>id<span class="pl-pds">"</span></span>),
+                aRs<span class="pl-k">.</span>getString(<span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>),
+                aRs<span class="pl-k">.</span>getString(<span class="pl-s"><span class="pl-pds">"</span>phone_number<span class="pl-pds">"</span></span>));
+            <span class="pl-k">return</span> p;
+        }
+        <span class="pl-k">return</span> <span class="pl-c1">null</span>;
+    }
+};
+
+<span class="pl-k">public</span> <span class="pl-k">List&lt;<span class="pl-smi">Person</span>&gt;</span> getByName(<span class="pl-smi">String</span> aName)
+{
+    <span class="pl-k">return</span> mJdbc<span class="pl-k">.</span>query(<span class="pl-c1">SQL_GET_BY_NAME</span>, <span class="pl-k">new</span> <span class="pl-smi">Object</span>[]{<span class="pl-s"><span class="pl-pds">"</span>%<span class="pl-pds">"</span></span><span class="pl-k">+</span>aName<span class="pl-k">+</span><span class="pl-s"><span class="pl-pds">"</span>%<span class="pl-pds">"</span></span>}, <span class="pl-c1">MULTIPLE_RS_EXTRACTOR</span>);
+}</pre></div>
+</li>
+<li>
+<p>Menghubungkan command user ke database dengan DAO</p>
+
+<div class="highlight highlight-source-java"><pre><span class="pl-k">List&lt;<span class="pl-smi">Person</span>&gt;</span> self<span class="pl-k">=</span>mDao<span class="pl-k">.</span>getByName(<span class="pl-s"><span class="pl-pds">"</span>%<span class="pl-pds">"</span></span><span class="pl-k">+</span>aName<span class="pl-k">+</span><span class="pl-s"><span class="pl-pds">"</span>%<span class="pl-pds">"</span></span>);</pre></div>
+</li>
+<li>
 <p>Compile</p>
 
 <div class="highlight highlight-source-shell"><pre>$ gradle clean build</pre></div>
