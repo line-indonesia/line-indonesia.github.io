@@ -37,12 +37,11 @@ com.linecorp.channel_access_token=<your_channel_access_token>
 	);
 	```	
 	
-* Menyiapkan DAO di sisi client
+* Siapkan DAO di sisi client
 
 	```java
 	public interface PersonDao
 {
-    	public Long post(Person aPerson);
     	public List<Person> get();
     	public List<Person> getByName(String aName);
     	public int registerPerson(String aName, String aPhoneNumber);
@@ -50,8 +49,10 @@ com.linecorp.channel_access_token=<your_channel_access_token>
 
 	```
 	
-* Melakukan query menggunakan DAO
-
+* Melakukan query menggunakan DAO<br>
+	
+	Potongan kode ini digunakan untuk registrasi buku telepon baru ke database
+	
 	```java
     private final static String SQL_REGISTER="INSERT INTO phonebook (name, phone_number) VALUES (?, ?);";
     
@@ -61,18 +62,7 @@ com.linecorp.channel_access_token=<your_channel_access_token>
     }
 	```
 	
-	```java
-	public Long post(Person aPerson)
-    {
-        SimpleJdbcInsert insert=new SimpleJdbcInsert(mJdbc)
-            .withTableName("phonebook")
-            .usingGeneratedKeyColumns("id");
-        Map<String, Object> fields=new HashMap<String, Object>();
-        fields.put("name", aPerson.name);
-        fields.put("phone_number", aPerson.phoneNumber);
-        return insert.executeAndReturnKey(fields).longValue();
-    }
-	```
+	Potongan kode ini digunakan untuk mengambil seluruh data
 	
 	```java
 	private final static String SQL_SELECT_ALL="SELECT id, name, phone_number FROM phonebook";
@@ -101,6 +91,7 @@ com.linecorp.channel_access_token=<your_channel_access_token>
         return mJdbc.query(SQL_SELECT_ALL, MULTIPLE_RS_EXTRACTOR);
     }
 	```
+	Potongan kode ini digunakan untuk mengambil data dengan nama tertentu
 	
 	```java
 	private final static String SQL_SELECT_ALL="SELECT id, name, phone_number FROM phonebook";
