@@ -2,7 +2,7 @@
 
 LINE Messaging API merupakan sebuah antarmuka pemrograman aplikasi yang memungkinkan sebuah program untuk menerima pesan, mengirim dan membalas pesan, dan mendapatkan profil pengguna dari LINE Chat.
 
-LINE Messaging API sendiri tidak dapat digunakan sendiri. Dibutuhkan pula komponen-komponen berikut pada implementasi dasarnya: 
+Namun, LINE Messaging API tidak dapat berjalan sendiri. Dibutuhkan pula komponen-komponen berikut pada implementasi dasarnya: 
 
 * **Framework** untuk membangun aplikasi dimana API diimplementasikan.
 * **PaaS** sebagai platform untuk mengembangkan, mengelola, dan menjalankan aplikasi tanpa membangun dan memelihara infrastruktur.
