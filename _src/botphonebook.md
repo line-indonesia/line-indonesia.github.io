@@ -3,30 +3,21 @@
 Contoh ini akan mendemonstrasikan cara untuk membuat sebuah aplikasi bot dengan **Spring framework** dan terintegrasi dengan **LINE Messaging API** dan **Line Bot SDK**, **PostgreSQL** untuk registrasi dan mendapatkan data dari bot yang layaknya sebuah buku telepon yang dikirimkan oleh pengguna via LINE Chat ke aplikasi bot anda. Aplikasi ini dijalankan di **Heroku**.
 
 ### Langkah Untuk Membuat ###
-* Buat LINE@ Account dengan mengaktifkan Messaging API
-> [LINE Business Center](https://business.line.me/en/)
+* Pertama, anda harus membuat akun LINE@, mengaktifkan Messaging API, menambahkan *add-on* PostgreSQL pada Heoku anda, dan memasukkan URL dari Webhook anda.
 
-* Register Webhook URL anda
-	1. Buka [LINE Developer](https://developers.line.me/)
-	2. Pilih channel anda
-	3. Edit "Basic Information"
-* Buat akun Cloudinary
-> [Cloudinary](http://cloudinary.com)
-
-* Tambah file  `application.properties` di direktori *src/main/resources*, dan isi dengan channel secret dan channel access token anda, seperti berikut:
+* Selanjutnya, tambah file  `application.properties` di direktori *src/main/resources*, dan isi dengan channel secret dan channel access token anda, seperti berikut:
 
 	```ini
 com.linecorp.channel_secret=<your_channel_secret>
 com.linecorp.channel_access_token=<your_channel_access_token>
 	```
 	
-* Buka Heroku Postgres
+* Lalu, siapkan tabel untuk menyimpan data yang akan digunakan oleh aplikasi ini. Untuk mengakses PostgreSQL dari heroku adalah sebagai berikut:
 
 	```bash
 	$ heroku psql
 	```
-
-* Siapkan tabel `phonebook`
+	Siapkan tabel yang akan digunakan.
 
 	```sql
 	CREATE TABLE IF NOT EXISTS phonebook
@@ -36,8 +27,7 @@ com.linecorp.channel_access_token=<your_channel_access_token>
 		phone_number TEXT
 	);
 	```	
-	
-* Siapkan DAO di sisi client
+* Kemudian, siapkan DAO di sisi client. DAO berfungsi untuk memanipulasi data yang terdapat dalam database.
 
 	```java
 	public interface PersonDao
@@ -49,7 +39,7 @@ com.linecorp.channel_access_token=<your_channel_access_token>
 
 	```
 	
-* Melakukan query menggunakan DAO<br>
+* Untuk mengimplementasikan DAO, dibutuhkan query-query untuk melakukan manipulasi data yang ada didalam database. Manipulasi data yang dilakukan pada contoh ini menggunakan potongan-potongan kode di bawah ini.
 	
 	Potongan kode ini digunakan untuk registrasi buku telepon baru ke database
 	
@@ -121,29 +111,12 @@ com.linecorp.channel_access_token=<your_channel_access_token>
     }
 	```
 
-*  Menghubungkan command user ke database dengan DAO
+*  Untuk mengakses fungsi pada DAO, dilakukan dengan cara berikut:
 
 	```java
 	List<Person> self=mDao.getByName("%"+aName+"%");
 	```
-
-* Compile
- 
-    ```bash
-    $ gradle clean build
-    ```
-* Deploy
- 	
- 	```bash
-	$ git push heroku master
-	```  
-
-* Run Server
-
-    ```bash
-    $ heroku ps:scale web=1
-    ```
-
+* Setelah selesai membuat aplikasi anda, anda dapat menjalankan aplikasi anda.
 * Penggunaan
     
     Ada dua kata kunci yang bisa digunakan dengan bot ini, yaitu **find** dan **reg**

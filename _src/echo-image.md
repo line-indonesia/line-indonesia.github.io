@@ -3,17 +3,9 @@
 Contoh ini akan mendemonstrasikan cara untuk membuat sebuah aplikasi bot dengan **Spring framework** dan terintegrasi dengan **LINE Messaging API**, **LINE Bot SDK** dan **Cloudinary image storage** untuk mengembalikan gambar yang dikirimkan oleh pengguna via LINE Chat ke aplikasi bot anda. Aplikasi ini dijalankan di **Heroku**.
 
 ### Langkah Untuk Membuat ###
-* Buat LINE@ Account dengan mengaktifkan Messaging API
-> [LINE Business Center](https://business.line.me/en/)
+* Pertama, anda harus membuat akun LINE@, mengaktifkan Messaging API, membuat akun Cloudinary, dan memasukkan URL dari Webhook anda.
 
-* Register Webhook URL anda
-	1. Buka [LINE Developer](https://developers.line.me/)
-	2. Pilih channel anda
-	3. Edit "Basic Information"
-* Buat akun Cloudinary
-> [Cloudinary](http://cloudinary.com)
-
-* Tambah file  `application.properties` di direktori *src/main/resources*, dan isi dengan nama cloud, api key, dan api secret dari Cloudinary anda, serta channel secret dan channel access token anda, seperti berikut:
+* Selanjutnya, tambah file  `application.properties` di direktori *src/main/resources*, dan isi dengan nama cloud, api key, dan api secret dari Cloudinary anda, serta channel secret dan channel access token anda, seperti berikut:
 
 	```ini
 com.cloudinary.cloud_name=<your_cloud_name>
@@ -23,7 +15,7 @@ com.linecorp.channel_secret=<your_channel_secret>
 com.linecorp.channel_access_token=<your_channel_access_token>
 ```
 
-* Mendapatkan gambar yang dikirim pengguna
+* Untuk mendapatkan konten yang dikirimkan oleh pengguna, anda dapat menggunakan **Get Content API**. Pada contoh ini akan didapatkan gambar yang dikirim pengguna.
 
 	```java
 	Response<ResponseBody> response =
@@ -50,7 +42,7 @@ com.linecorp.channel_access_token=<your_channel_access_token>
 	}
 	```
 
-* Menyimpan di Cloudinary
+* Konten yang didapatkan dari Get Content API merupakan *binary data*, maka dari itu, anda perlu menyimpannya terlebih dahulu pada sebuah storage, sebelum dapat dikirimkan kembali ke pengguna.
 
 	```java
 	Map uploadResult = cloudinary.uploader().upload(path.toFile(), ObjectUtils.emptyMap());
@@ -58,10 +50,10 @@ com.linecorp.channel_access_token=<your_channel_access_token>
     JSONObject jUpload = new JSONObject(uploadResult);
     uploadURL = jUpload.getString("secure_url");
 	```
-	**INFO** Gambar perlu disimpan karena LINE Messaging API membutuhkan URL gambar untuk mengirimkan gambar ke pengguna.
+	**INFO** Gambar perlu disimpan karena LINE Messaging API membutuhkan URL gambar untuk mengirimkan gambar ke pengguna.<br>
 	**INFO** URL harus aman **(HTTPS)**, Maka dari itu, *secure_url* dari Objek JSON yang didapatkan dari respon Cloudinary digunakan.
 
-* Mengirim gambar ke pengguna
+* Untuk mengirim kembali ke pengguna, maka digunakan **Push Message API**. Pada contoh ini, digunakan Java SDK.
 
 	```java
 	Response<BotApiResponse> response = LineMessagingServiceBuilder
@@ -71,32 +63,22 @@ com.linecorp.channel_access_token=<your_channel_access_token>
             .execute();
    	System.out.println(response.code() + " " + response.message());
 	```
-
-
-* Compile
-
-	`gradle clean build`
-
-* Menambahkan ke Git Repositories
+	Dari source code diatas, terkomposisi data JSON dibawah. Untuk mengirimkan pesan ini, digunakan metode pengiriman dengan **Push Message API** maka dari itu, anda membutuhkan **id** dari target pengiriman.
 	
-	`git add .`
-
-* Commit perubahan
-
-	`git commit -m "Your Messages"`
-
-* Deploy
-
-	`git push heroku master`
-
-* Run Server
-
-	`$ heroku ps:scale web=1`
-
-* Open logs
-
-	`heroku logs --tail`
-
+	```JSON
+	{
+		"to":<target's_id>,
+		"messages":
+		[
+			{
+				"type":"image",
+				"originalContentUrl":<secure_url>,
+				"previewImageUrl":<secure_url>
+			}
+		]
+	}
+	```
+* Setelah selesai membuat aplikasi anda, anda dapat menjalankan aplikasi anda.
 
 ### Tautan ke git repository ###
 
