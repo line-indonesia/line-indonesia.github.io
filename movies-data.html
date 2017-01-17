@@ -58,38 +58,42 @@
 <a id="user-content-langkah-untuk-membuat" class="anchor" href="#langkah-untuk-membuat" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Langkah Untuk Membuat</h3>
 
 <ul>
+<li><p>Pertama, anda harus membuat akun LINE@, mengaktifkan Messaging API, dan memasukkan URL dari Webhook anda dengan <a href="Integration.html">cara ini</a>.</p></li>
 <li>
-<p>Buat LINE@ Account dengan mengaktifkan Messaging API</p>
-
-<blockquote>
-<p><a href="https://business.line.me/en/">LINE Business Center</a></p>
-</blockquote>
-</li>
-<li>
-<p>Register Webhook URL anda</p>
-
-<ol>
-<li>Buka <a href="https://developers.line.me/">LINE Developer</a>
-</li>
-<li>Pilih channel anda</li>
-<li>Edit "Basic Information"</li>
-</ol>
-</li>
-<li>
-<p>Buat akun Cloudinary</p>
-
-<blockquote>
-<p><a href="http://cloudinary.com">Cloudinary</a></p>
-</blockquote>
-</li>
-<li>
-<p>Tambah file  <code>application.properties</code> di direktori <em>src/main/resources</em>, dan isi dengan channel secret dan channel access token anda, seperti berikut:</p>
+<p>Selanjutnya, tambah file  <code>application.properties</code> di direktori <em>src/main/resources</em>, dan isi dengan channel secret dan channel access token anda, seperti berikut:</p>
 
 <div class="highlight highlight-source-ini"><pre><span class="pl-k">com.linecorp.channel_secret</span>=&lt;your_channel_secret&gt;
 <span class="pl-k">com.linecorp.channel_access_token</span>=&lt;your_channel_access_token&gt;</pre></div>
 </li>
 <li>
-<p>Membalas pesan pengguna</p>
+<p>Pada saat anda menerima sebuah event, maka anda akan mendapatkan data JSON:</p>
+
+<div class="highlight highlight-source-json"><pre>{
+    <span class="pl-s"><span class="pl-pds">"</span>events<span class="pl-pds">"</span></span>:
+    [
+        {
+            <span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span>:<span class="pl-s"><span class="pl-pds">"</span>message<span class="pl-pds">"</span></span>,
+            <span class="pl-s"><span class="pl-pds">"</span>replyToken<span class="pl-pds">"</span></span>:<span class="pl-s"><span class="pl-pds">"</span>610147d637dc4ef091cb47ca45289ba6<span class="pl-pds">"</span></span>,
+            <span class="pl-s"><span class="pl-pds">"</span>source<span class="pl-pds">"</span></span>:
+            {
+                <span class="pl-s"><span class="pl-pds">"</span>userId<span class="pl-pds">"</span></span>:<span class="pl-ii">&lt;target's_user_id&gt;</span>,
+                <span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span>:<span class="pl-s"><span class="pl-pds">"</span>user<span class="pl-pds">"</span></span>
+            },
+            <span class="pl-s"><span class="pl-pds">"</span>timestamp<span class="pl-pds">"</span></span>:<span class="pl-c1">1484622624865</span>,
+            <span class="pl-s"><span class="pl-pds">"</span>message<span class="pl-pds">"</span></span>:
+            {
+                <span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span>:<span class="pl-s"><span class="pl-pds">"</span>text<span class="pl-pds">"</span></span>,
+                <span class="pl-s"><span class="pl-pds">"</span>id<span class="pl-pds">"</span></span>:<span class="pl-s"><span class="pl-pds">"</span>5513240775730<span class="pl-pds">"</span></span>,
+                <span class="pl-s"><span class="pl-pds">"</span>text<span class="pl-pds">"</span></span>:<span class="pl-s"><span class="pl-pds">"</span>title <span class="pl-cce">\"</span>Iron Man<span class="pl-cce">\"</span><span class="pl-pds">"</span></span>
+            }
+        }
+    ]
+}</pre></div>
+
+<p>Dari data ini anda bisa mendapatkan tipe dari event, replyToken, siapa yang melakukan event tersebut, dan detail lainnya dari event.</p>
+</li>
+<li>
+<p>Untuk membalas sebuah event pesan dari pengguna, anda dapat menggunakan <strong>Reply Message API</strong>. Pada contoh ini, digunakan Java SDK.</p>
 
 <div class="highlight highlight-source-java"><pre><span class="pl-smi">TextMessage</span> textMessage <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-smi">TextMessage</span>(messageToUser);
 <span class="pl-smi">ReplyMessage</span> replyMessage <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-smi">ReplyMessage</span>(rToken, textMessage);
@@ -104,9 +108,22 @@
         <span class="pl-smi">System</span><span class="pl-k">.</span>out<span class="pl-k">.</span>println(<span class="pl-s"><span class="pl-pds">"</span>Exception is raised <span class="pl-pds">"</span></span>);
         e<span class="pl-k">.</span>printStackTrace();
     }</pre></div>
+
+<p>Dari source code diatas, terkomposisi data JSON dibawah. Anda hanya memerlukan <strong>replyToken</strong> untuk membalas pesan, tidak perlu menggunakan id dari target.</p>
+
+<div class="highlight highlight-source-json"><pre>{
+    <span class="pl-s"><span class="pl-pds">"</span>replyToken<span class="pl-pds">"</span></span>:<span class="pl-s"><span class="pl-pds">"</span>&lt;replyToken&gt;<span class="pl-pds">"</span></span>,
+    <span class="pl-s"><span class="pl-pds">"</span>messages<span class="pl-pds">"</span></span>:
+    [
+        {
+            <span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span>:<span class="pl-s"><span class="pl-pds">"</span>text<span class="pl-pds">"</span></span>,
+            <span class="pl-s"><span class="pl-pds">"</span>text<span class="pl-pds">"</span></span>:<span class="pl-s"><span class="pl-pds">"</span>Plot: After being held captive in an Afghan cave, billionaire engineer Tony Stark creates a unique weaponized suit of armor to fight evil.<span class="pl-pds">"</span></span>
+        }
+    ]
+}</pre></div>
 </li>
 <li>
-<p>Mengirim pesan ke pengguna</p>
+<p>Untuk mengirim pesan ke pengguna tertentu, anda dapat menggunakan <strong>Push Message API</strong>. Pada contoh ini, digunakan Java SDK.</p>
 
 <div class="highlight highlight-source-java"><pre><span class="pl-smi">TextMessage</span> textMessage <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-smi">TextMessage</span>(txt);
 <span class="pl-smi">PushMessage</span> pushMessage <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-smi">PushMessage</span>(sourceId,textMessage);
@@ -121,9 +138,22 @@
         <span class="pl-smi">System</span><span class="pl-k">.</span>out<span class="pl-k">.</span>println(<span class="pl-s"><span class="pl-pds">"</span>Exception is raised <span class="pl-pds">"</span></span>);
         e<span class="pl-k">.</span>printStackTrace();
     }</pre></div>
+
+<p>Dari source code diatas, terkomposisi data JSON dibawah. Untuk mengirimkan pesan ini, anda membutuhkan <strong>id</strong> dari target pengiriman.</p>
+
+<div class="highlight highlight-source-json"><pre>{
+    <span class="pl-s"><span class="pl-pds">"</span>to<span class="pl-pds">"</span></span>:<span class="pl-s"><span class="pl-pds">"</span>&lt;target's_id&gt;<span class="pl-pds">"</span></span>,
+    <span class="pl-s"><span class="pl-pds">"</span>messages<span class="pl-pds">"</span></span>:
+    [
+        {
+            <span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span>:<span class="pl-s"><span class="pl-pds">"</span>text<span class="pl-pds">"</span></span>,
+            <span class="pl-s"><span class="pl-pds">"</span>text<span class="pl-pds">"</span></span>:<span class="pl-s"><span class="pl-pds">"</span>plot <span class="pl-cce">\"</span>iron man<span class="pl-cce">\"</span> - user<span class="pl-cce">\uDBC0\uDC8D</span><span class="pl-pds">"</span></span>
+        }
+    ]
+}</pre></div>
 </li>
 <li>
-<p>Membuat carousel template message</p>
+<p>Pada Messaging API terdapat sebuah jenis pesan yang disebut <strong>Template Message</strong>. Pada contoh ini, digunakan salah satu template message yaitu <strong>Carousel Template</strong>. Cara membuat carousel template message:</p>
 
 <div class="highlight highlight-source-java"><pre><span class="pl-smi">CarouselTemplate</span> carouselTemplate <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-smi">CarouselTemplate</span>(
                 <span class="pl-smi">Arrays</span><span class="pl-k">.</span>asList(<span class="pl-k">new</span> CarouselColumn
@@ -138,9 +168,76 @@
                                      <span class="pl-k">new</span> <span class="pl-smi">MessageAction</span>(<span class="pl-s"><span class="pl-pds">"</span>Awards<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>Awards <span class="pl-cce">\"</span><span class="pl-pds">"</span></span> <span class="pl-k">+</span> title <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">"</span><span class="pl-cce">\"</span><span class="pl-pds">"</span></span>)))));
 <span class="pl-smi">TemplateMessage</span> templateMessage <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-smi">TemplateMessage</span>(<span class="pl-s"><span class="pl-pds">"</span>Your search result<span class="pl-pds">"</span></span>, carouselTemplate);
 <span class="pl-smi">PushMessage</span> pushMessage <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-smi">PushMessage</span>(sourceId,templateMessage);</pre></div>
+
+<p>Dari source code diatas, terkomposisi data JSON dibawah. Untuk mengirimkan pesan ini, digunakan metode pengiriman dengan <strong>Push Message API</strong> maka dari itu, anda membutuhkan <strong>id</strong> dari target pengiriman.</p>
+
+<div class="highlight highlight-source-json"><pre>{
+    <span class="pl-s"><span class="pl-pds">"</span>to<span class="pl-pds">"</span></span>:<span class="pl-s"><span class="pl-pds">"</span>&lt;target's_id&gt;<span class="pl-pds">"</span></span>,
+    <span class="pl-s"><span class="pl-pds">"</span>messages<span class="pl-pds">"</span></span>:
+    [
+        {
+            <span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span>:<span class="pl-s"><span class="pl-pds">"</span>template<span class="pl-pds">"</span></span>,
+            <span class="pl-s"><span class="pl-pds">"</span>altText<span class="pl-pds">"</span></span>:<span class="pl-s"><span class="pl-pds">"</span>Your search result<span class="pl-pds">"</span></span>,
+            <span class="pl-s"><span class="pl-pds">"</span>template<span class="pl-pds">"</span></span>:
+            {
+                <span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span>:<span class="pl-s"><span class="pl-pds">"</span>carousel<span class="pl-pds">"</span></span>,
+                <span class="pl-s"><span class="pl-pds">"</span>columns<span class="pl-pds">"</span></span>:
+                [
+                    {
+                        <span class="pl-s"><span class="pl-pds">"</span>thumbnailImageUrl<span class="pl-pds">"</span></span>:<span class="pl-s"><span class="pl-pds">"</span>https://images-na.ssl-images-amazon.com/images/M/MV5BMTczNTI2ODUwOF5BMl5BanBnXkFtZTcwMTU0NTIzMw@@._V1_SX300.jpg<span class="pl-pds">"</span></span>,
+                        <span class="pl-s"><span class="pl-pds">"</span>title<span class="pl-pds">"</span></span>:<span class="pl-s"><span class="pl-pds">"</span>Iron Man<span class="pl-pds">"</span></span>,
+                        <span class="pl-s"><span class="pl-pds">"</span>text<span class="pl-pds">"</span></span>:<span class="pl-s"><span class="pl-pds">"</span>Select one for more info<span class="pl-pds">"</span></span>,
+                        <span class="pl-s"><span class="pl-pds">"</span>actions<span class="pl-pds">"</span></span>:
+                        [
+                            {
+                                <span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span>:<span class="pl-s"><span class="pl-pds">"</span>message<span class="pl-pds">"</span></span>,
+                                <span class="pl-s"><span class="pl-pds">"</span>label<span class="pl-pds">"</span></span>:<span class="pl-s"><span class="pl-pds">"</span>Full Data<span class="pl-pds">"</span></span>,
+                                <span class="pl-s"><span class="pl-pds">"</span>text<span class="pl-pds">"</span></span>:<span class="pl-s"><span class="pl-pds">"</span>Title <span class="pl-cce">\"</span>Iron Man<span class="pl-cce">\"</span><span class="pl-pds">"</span></span>
+                            },
+                            {
+                                <span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span>:<span class="pl-s"><span class="pl-pds">"</span>message<span class="pl-pds">"</span></span>,
+                                <span class="pl-s"><span class="pl-pds">"</span>label<span class="pl-pds">"</span></span>:<span class="pl-s"><span class="pl-pds">"</span>Summary<span class="pl-pds">"</span></span>,
+                                <span class="pl-s"><span class="pl-pds">"</span>text<span class="pl-pds">"</span></span>:<span class="pl-s"><span class="pl-pds">"</span>Plot <span class="pl-cce">\"</span>Iron Man<span class="pl-cce">\"</span><span class="pl-pds">"</span></span>
+                            },
+                            {
+                                <span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span>:<span class="pl-s"><span class="pl-pds">"</span>message<span class="pl-pds">"</span></span>,
+                                <span class="pl-s"><span class="pl-pds">"</span>label<span class="pl-pds">"</span></span>:<span class="pl-s"><span class="pl-pds">"</span>Poster<span class="pl-pds">"</span></span>,
+                                <span class="pl-s"><span class="pl-pds">"</span>text<span class="pl-pds">"</span></span>:<span class="pl-s"><span class="pl-pds">"</span>Poster <span class="pl-cce">\"</span>Iron Man<span class="pl-cce">\"</span><span class="pl-pds">"</span></span>
+                            }
+                        ]
+                    },
+                    {
+                        <span class="pl-s"><span class="pl-pds">"</span>thumbnailImageUrl<span class="pl-pds">"</span></span>:<span class="pl-s"><span class="pl-pds">"</span>https://images-na.ssl-images-amazon.com/images/M/MV5BMTczNTI2ODUwOF5BMl5BanBnXkFtZTcwMTU0NTIzMw@@._V1_SX300.jpg<span class="pl-pds">"</span></span>,
+                        <span class="pl-s"><span class="pl-pds">"</span>title<span class="pl-pds">"</span></span>:<span class="pl-s"><span class="pl-pds">"</span>Iron Man<span class="pl-pds">"</span></span>,
+                        <span class="pl-s"><span class="pl-pds">"</span>text<span class="pl-pds">"</span></span>:<span class="pl-s"><span class="pl-pds">"</span>Select one for more info<span class="pl-pds">"</span></span>,
+                        <span class="pl-s"><span class="pl-pds">"</span>actions<span class="pl-pds">"</span></span>:
+                        [
+                            {
+                                <span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span>:<span class="pl-s"><span class="pl-pds">"</span>message<span class="pl-pds">"</span></span>,
+                                <span class="pl-s"><span class="pl-pds">"</span>label<span class="pl-pds">"</span></span>:<span class="pl-s"><span class="pl-pds">"</span>Released Date<span class="pl-pds">"</span></span>,
+                                <span class="pl-s"><span class="pl-pds">"</span>text<span class="pl-pds">"</span></span>:<span class="pl-s"><span class="pl-pds">"</span>Released <span class="pl-cce">\"</span>Iron Man<span class="pl-cce">\"</span><span class="pl-pds">"</span></span>
+                            },
+                            {
+                                <span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span>:<span class="pl-s"><span class="pl-pds">"</span>message<span class="pl-pds">"</span></span>,
+                                <span class="pl-s"><span class="pl-pds">"</span>label<span class="pl-pds">"</span></span>:<span class="pl-s"><span class="pl-pds">"</span>Actors<span class="pl-pds">"</span></span>,
+                                <span class="pl-s"><span class="pl-pds">"</span>text<span class="pl-pds">"</span></span>:<span class="pl-s"><span class="pl-pds">"</span>Actors <span class="pl-cce">\"</span>Iron Man<span class="pl-cce">\"</span><span class="pl-pds">"</span></span>
+                            },
+                            {
+                                <span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span>:<span class="pl-s"><span class="pl-pds">"</span>message<span class="pl-pds">"</span></span>,
+                                <span class="pl-s"><span class="pl-pds">"</span>label<span class="pl-pds">"</span></span>:<span class="pl-s"><span class="pl-pds">"</span>Awards<span class="pl-pds">"</span></span>,
+                                <span class="pl-s"><span class="pl-pds">"</span>text<span class="pl-pds">"</span></span>:<span class="pl-s"><span class="pl-pds">"</span>Awards <span class="pl-cce">\"</span>Iron Man<span class="pl-cce">\"</span><span class="pl-pds">"</span></span>
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    ]
+}
+</pre></div>
 </li>
 <li>
-<p>Meninggalkan group atau room</p>
+<p>Salah satu fitur dari Messaging API adalah anda dapat meninggalkan group atau room dengan menggunakan <strong>Leave API</strong>. Pada contoh di bawah, digunakan Java SDK.</p>
 
 <div class="highlight highlight-source-java"><pre><span class="pl-k">Response&lt;<span class="pl-smi">BotApiResponse</span>&gt;</span> response <span class="pl-k">=</span> <span class="pl-smi">LineMessagingServiceBuilder</span>
                 .create(lChannelAccessToken)
@@ -148,41 +245,11 @@
                 .leaveGroup(id)
                 .execute();
 <span class="pl-smi">System</span><span class="pl-k">.</span>out<span class="pl-k">.</span>println(response<span class="pl-k">.</span>code() <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">"</span> <span class="pl-pds">"</span></span> <span class="pl-k">+</span> response<span class="pl-k">.</span>message());</pre></div>
+
+<p>Leave API hanya akan mengirimkan JSON kosong saat berhasil.</p>
 </li>
-<li><p>Compile</p></li>
+<li><p>Setelah selesai membuat aplikasi anda, anda dapat menjalankan aplikasi anda dengan <a href="heroku-overview.html">cara ini</a>.</p></li>
 </ul>
-
-<p><code>gradle clean build</code></p>
-
-<ul>
-<li>Menambahkan ke Git Repositories</li>
-</ul>
-
-<p><code>git add .</code></p>
-
-<ul>
-<li>Commit changes</li>
-</ul>
-
-<p><code>git commit -m "Your Messages"</code></p>
-
-<ul>
-<li>Deploy</li>
-</ul>
-
-<p><code>git push heroku master</code></p>
-
-<ul>
-<li>Run Server</li>
-</ul>
-
-<p><code>$ heroku ps:scale web=1</code></p>
-
-<ul>
-<li>Open logs</li>
-</ul>
-
-<p><code>heroku logs --tail</code></p>
 
 <h3>
 <a id="user-content-tautan-ke-git-repository" class="anchor" href="#tautan-ke-git-repository" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Tautan ke git repository</h3>

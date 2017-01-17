@@ -58,43 +58,19 @@
 <a id="user-content-langkah-untuk-membuat" class="anchor" href="#langkah-untuk-membuat" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Langkah Untuk Membuat</h3>
 
 <ul>
+<li><p>Pertama, anda harus membuat akun LINE@, mengaktifkan Messaging API, memasukkan URL dari Webhook anda dengan <a href="Integration.html">cara ini</a>, dan <a href="heroku-postgres.html">menambahkan <em>add-on</em> PostgreSQL pada Heroku anda</a>.</p></li>
 <li>
-<p>Buat LINE@ Account dengan mengaktifkan Messaging API</p>
-
-<blockquote>
-<p><a href="https://business.line.me/en/">LINE Business Center</a></p>
-</blockquote>
-</li>
-<li>
-<p>Register Webhook URL anda</p>
-
-<ol>
-<li>Buka <a href="https://developers.line.me/">LINE Developer</a>
-</li>
-<li>Pilih channel anda</li>
-<li>Edit "Basic Information"</li>
-</ol>
-</li>
-<li>
-<p>Buat akun Cloudinary</p>
-
-<blockquote>
-<p><a href="http://cloudinary.com">Cloudinary</a></p>
-</blockquote>
-</li>
-<li>
-<p>Tambah file  <code>application.properties</code> di direktori <em>src/main/resources</em>, dan isi dengan channel secret dan channel access token anda, seperti berikut:</p>
+<p>Selanjutnya, tambah file  <code>application.properties</code> di direktori <em>src/main/resources</em>, dan isi dengan channel secret dan channel access token anda, seperti berikut:</p>
 
 <div class="highlight highlight-source-ini"><pre><span class="pl-k">com.linecorp.channel_secret</span>=&lt;your_channel_secret&gt;
 <span class="pl-k">com.linecorp.channel_access_token</span>=&lt;your_channel_access_token&gt;</pre></div>
 </li>
 <li>
-<p>Buka Heroku Postgres</p>
+<p>Lalu, siapkan tabel untuk menyimpan data yang akan digunakan oleh aplikasi ini. Untuk mengakses PostgreSQL dari heroku adalah sebagai berikut:</p>
 
 <div class="highlight highlight-source-shell"><pre>$ heroku psql</pre></div>
-</li>
-<li>
-<p>Siapkan tabel <code>phonebook</code></p>
+
+<p>Siapkan tabel yang akan digunakan.</p>
 
 <div class="highlight highlight-source-sql"><pre><span class="pl-k">CREATE</span> <span class="pl-k">TABLE</span> <span class="pl-en">IF</span> NOT EXISTS phonebook
 (
@@ -104,7 +80,7 @@
 );</pre></div>
 </li>
 <li>
-<p>Siapkan DAO di sisi client</p>
+<p>Kemudian, siapkan DAO di sisi client. DAO berfungsi untuk memanipulasi data yang terdapat dalam database.</p>
 
 <div class="highlight highlight-source-java"><pre><span class="pl-k">public</span> <span class="pl-k">interface</span> <span class="pl-en">PersonDao</span>
 {
@@ -115,7 +91,7 @@
 </pre></div>
 </li>
 <li>
-<p>Melakukan query menggunakan DAO<br></p>
+<p>Untuk mengimplementasikan DAO, dibutuhkan query-query untuk melakukan manipulasi data yang ada didalam database. Manipulasi data yang dilakukan pada contoh ini menggunakan potongan-potongan kode di bawah ini.</p>
 
 <p>Potongan kode ini digunakan untuk registrasi buku telepon baru ke database</p>
 
@@ -183,25 +159,11 @@
 }</pre></div>
 </li>
 <li>
-<p>Menghubungkan command user ke database dengan DAO</p>
+<p>Untuk mengakses fungsi pada DAO, dilakukan dengan cara berikut:</p>
 
 <div class="highlight highlight-source-java"><pre><span class="pl-k">List&lt;<span class="pl-smi">Person</span>&gt;</span> self<span class="pl-k">=</span>mDao<span class="pl-k">.</span>getByName(<span class="pl-s"><span class="pl-pds">"</span>%<span class="pl-pds">"</span></span><span class="pl-k">+</span>aName<span class="pl-k">+</span><span class="pl-s"><span class="pl-pds">"</span>%<span class="pl-pds">"</span></span>);</pre></div>
 </li>
-<li>
-<p>Compile</p>
-
-<div class="highlight highlight-source-shell"><pre>$ gradle clean build</pre></div>
-</li>
-<li>
-<p>Deploy</p>
-
-<div class="highlight highlight-source-shell"><pre>$ git push heroku master</pre></div>
-</li>
-<li>
-<p>Run Server</p>
-
-<div class="highlight highlight-source-shell"><pre>$ heroku ps:scale web=1</pre></div>
-</li>
+<li>Setelah selesai membuat aplikasi anda, anda dapat menjalankan aplikasi anda dengan <a href="heroku-overview.html">cara ini</a>.</li>
 <li>
 <p>Penggunaan</p>
 

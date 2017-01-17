@@ -3,7 +3,7 @@
 Contoh ini akan mendemonstrasikan cara untuk membuat sebuah aplikasi bot dengan **Spring framework** dan terintegrasi dengan **LINE Messaging API** dan **Line Bot SDK**, **PostgreSQL** untuk registrasi dan mendapatkan data dari bot yang layaknya sebuah buku telepon yang dikirimkan oleh pengguna via LINE Chat ke aplikasi bot anda. Aplikasi ini dijalankan di **Heroku**.
 
 ### Langkah Untuk Membuat ###
-* Pertama, anda harus membuat akun LINE@, mengaktifkan Messaging API, menambahkan *add-on* PostgreSQL pada Heoku anda, dan memasukkan URL dari Webhook anda.
+* Pertama, anda harus membuat akun LINE@, mengaktifkan Messaging API, memasukkan URL dari Webhook anda dengan [cara ini](Integration.html), dan [menambahkan *add-on* PostgreSQL pada Heroku anda](heroku-postgres.html).
 
 * Selanjutnya, tambah file  `application.properties` di direktori *src/main/resources*, dan isi dengan channel secret dan channel access token anda, seperti berikut:
 
@@ -116,7 +116,7 @@ com.linecorp.channel_access_token=<your_channel_access_token>
 	```java
 	List<Person> self=mDao.getByName("%"+aName+"%");
 	```
-* Setelah selesai membuat aplikasi anda, anda dapat menjalankan aplikasi anda.
+* Setelah selesai membuat aplikasi anda, anda dapat menjalankan aplikasi anda dengan [cara ini](heroku-overview.html).
 * Penggunaan
     
     Ada dua kata kunci yang bisa digunakan dengan bot ini, yaitu **find** dan **reg**

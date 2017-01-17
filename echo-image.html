@@ -58,32 +58,9 @@
 <a id="user-content-langkah-untuk-membuat" class="anchor" href="#langkah-untuk-membuat" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Langkah Untuk Membuat</h3>
 
 <ul>
+<li><p>Pertama, anda harus membuat akun LINE@, mengaktifkan Messaging API, memasukkan URL dari Webhook anda dengan <a href="Integration.html">cara ini</a>, dan <a href="cloudinary-overview.html">membuat akun Cloudinary</a>.</p></li>
 <li>
-<p>Buat LINE@ Account dengan mengaktifkan Messaging API</p>
-
-<blockquote>
-<p><a href="https://business.line.me/en/">LINE Business Center</a></p>
-</blockquote>
-</li>
-<li>
-<p>Register Webhook URL anda</p>
-
-<ol>
-<li>Buka <a href="https://developers.line.me/">LINE Developer</a>
-</li>
-<li>Pilih channel anda</li>
-<li>Edit "Basic Information"</li>
-</ol>
-</li>
-<li>
-<p>Buat akun Cloudinary</p>
-
-<blockquote>
-<p><a href="http://cloudinary.com">Cloudinary</a></p>
-</blockquote>
-</li>
-<li>
-<p>Tambah file  <code>application.properties</code> di direktori <em>src/main/resources</em>, dan isi dengan nama cloud, api key, dan api secret dari Cloudinary anda, serta channel secret dan channel access token anda, seperti berikut:</p>
+<p>Selanjutnya, tambah file  <code>application.properties</code> di direktori <em>src/main/resources</em>, dan isi dengan nama cloud, api key, dan api secret dari Cloudinary anda, serta channel secret dan channel access token anda, seperti berikut:</p>
 
 <div class="highlight highlight-source-ini"><pre><span class="pl-k">com.cloudinary.cloud_name</span>=&lt;your_cloud_name&gt;
 <span class="pl-k">com.cloudinary.api_key</span>=&lt;your_api_key&gt;
@@ -92,7 +69,7 @@
 <span class="pl-k">com.linecorp.channel_access_token</span>=&lt;your_channel_access_token&gt;</pre></div>
 </li>
 <li>
-<p>Mendapatkan gambar yang dikirim pengguna</p>
+<p>Untuk mendapatkan konten yang dikirimkan oleh pengguna, anda dapat menggunakan <strong>Get Content API</strong>. Pada contoh ini akan didapatkan gambar yang dikirim pengguna.</p>
 
 <div class="highlight highlight-source-java"><pre><span class="pl-k">Response&lt;<span class="pl-smi">ResponseBody</span>&gt;</span> response <span class="pl-k">=</span>
     <span class="pl-smi">LineMessagingServiceBuilder</span>
@@ -118,18 +95,18 @@
 }</pre></div>
 </li>
 <li>
-<p>Menyimpan di Cloudinary</p>
+<p>Konten yang didapatkan dari Get Content API merupakan <em>binary data</em>, maka dari itu, anda perlu menyimpannya terlebih dahulu pada sebuah storage, sebelum dapat dikirimkan kembali ke pengguna.</p>
 
 <div class="highlight highlight-source-java"><pre><span class="pl-smi">Map</span> uploadResult <span class="pl-k">=</span> cloudinary<span class="pl-k">.</span>uploader()<span class="pl-k">.</span>upload(path<span class="pl-k">.</span>toFile(), <span class="pl-smi">ObjectUtils</span><span class="pl-k">.</span>emptyMap());
 <span class="pl-smi">System</span><span class="pl-k">.</span>out<span class="pl-k">.</span>println(uploadResult<span class="pl-k">.</span>toString());
 <span class="pl-smi">JSONObject</span> jUpload <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-smi">JSONObject</span>(uploadResult);
 uploadURL <span class="pl-k">=</span> jUpload<span class="pl-k">.</span>getString(<span class="pl-s"><span class="pl-pds">"</span>secure_url<span class="pl-pds">"</span></span>);</pre></div>
 
-<p><strong>INFO</strong> Gambar perlu disimpan karena LINE Messaging API membutuhkan URL gambar untuk mengirimkan gambar ke pengguna.
+<p><strong>INFO</strong> Gambar perlu disimpan karena LINE Messaging API membutuhkan URL gambar untuk mengirimkan gambar ke pengguna.<br>
 <strong>INFO</strong> URL harus aman <strong>(HTTPS)</strong>, Maka dari itu, <em>secure_url</em> dari Objek JSON yang didapatkan dari respon Cloudinary digunakan.</p>
 </li>
 <li>
-<p>Mengirim gambar ke pengguna</p>
+<p>Untuk mengirim kembali ke pengguna, maka digunakan <strong>Push Message API</strong>. Pada contoh ini, digunakan Java SDK.</p>
 
 <div class="highlight highlight-source-java"><pre><span class="pl-k">Response&lt;<span class="pl-smi">BotApiResponse</span>&gt;</span> response <span class="pl-k">=</span> <span class="pl-smi">LineMessagingServiceBuilder</span>
         .create(lChannelAccessToken)
@@ -137,37 +114,22 @@ uploadURL <span class="pl-k">=</span> jUpload<span class="pl-k">.</span>getStrin
         .pushMessage(pushMessage)
         .execute();
 <span class="pl-smi">System</span><span class="pl-k">.</span>out<span class="pl-k">.</span>println(response<span class="pl-k">.</span>code() <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">"</span> <span class="pl-pds">"</span></span> <span class="pl-k">+</span> response<span class="pl-k">.</span>message());</pre></div>
-</li>
-<li>
-<p>Compile</p>
 
-<p><code>gradle clean build</code></p>
-</li>
-<li>
-<p>Menambahkan ke Git Repositories</p>
+<p>Dari source code diatas, terkomposisi data JSON dibawah. Untuk mengirimkan pesan ini, digunakan metode pengiriman dengan <strong>Push Message API</strong> maka dari itu, anda membutuhkan <strong>id</strong> dari target pengiriman.</p>
 
-<p><code>git add .</code></p>
+<div class="highlight highlight-source-json"><pre>{
+    <span class="pl-s"><span class="pl-pds">"</span>to<span class="pl-pds">"</span></span>:<span class="pl-ii">&lt;target's_id&gt;</span>,
+    <span class="pl-s"><span class="pl-pds">"</span>messages<span class="pl-pds">"</span></span>:
+    [
+        {
+            <span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span>:<span class="pl-s"><span class="pl-pds">"</span>image<span class="pl-pds">"</span></span>,
+            <span class="pl-s"><span class="pl-pds">"</span>originalContentUrl<span class="pl-pds">"</span></span>:<span class="pl-ii">&lt;secure_url&gt;</span>,
+            <span class="pl-s"><span class="pl-pds">"</span>previewImageUrl<span class="pl-pds">"</span></span>:<span class="pl-ii">&lt;secure_url&gt;</span>
+        }
+    ]
+}</pre></div>
 </li>
-<li>
-<p>Commit perubahan</p>
-
-<p><code>git commit -m "Your Messages"</code></p>
-</li>
-<li>
-<p>Deploy</p>
-
-<p><code>git push heroku master</code></p>
-</li>
-<li>
-<p>Run Server</p>
-
-<p><code>$ heroku ps:scale web=1</code></p>
-</li>
-<li>
-<p>Open logs</p>
-
-<p><code>heroku logs --tail</code></p>
-</li>
+<li>Setelah selesai membuat aplikasi anda, anda dapat menjalankan aplikasi anda dengan <a href="heroku-overview.html">cara ini</a>.</li>
 </ul>
 
 <h3>

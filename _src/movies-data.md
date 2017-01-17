@@ -3,7 +3,7 @@
 Contoh ini akan mendemonstrasikan cara untuk membuat sebuah aplikasi bot dengan **Spring framework** dan terintegrasi dengan **LINE Messaging API** dan **LINE Bot SDK** untuk memerlihaktkan kegunaan dari fitur LINE Messaging API. Data film diambil dari [OMDb API](https://www.omdbapi.com/). Aplikasi ini dijalankan di **Heroku**.
 
 ### Langkah Untuk Membuat ###
-* Pertama, anda harus membuat akun LINE@, mengaktifkan Messaging API, dan memasukkan URL dari Webhook anda.
+* Pertama, anda harus membuat akun LINE@, mengaktifkan Messaging API, dan memasukkan URL dari Webhook anda dengan [cara ini](Integration.html).
 
 * Selanjutnya, tambah file  `application.properties` di direktori *src/main/resources*, dan isi dengan channel secret dan channel access token anda, seperti berikut:
 
@@ -200,7 +200,7 @@ com.linecorp.channel_access_token=<your_channel_access_token>
 	```
 	Leave API hanya akan mengirimkan JSON kosong saat berhasil.
 
-* Setelah selesai membuat aplikasi anda, anda dapat menjalankan aplikasi anda.
+* Setelah selesai membuat aplikasi anda, anda dapat menjalankan aplikasi anda dengan [cara ini](heroku-overview.html).
 
 ### Tautan ke git repository ###
 

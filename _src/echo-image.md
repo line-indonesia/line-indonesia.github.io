@@ -3,7 +3,7 @@
 Contoh ini akan mendemonstrasikan cara untuk membuat sebuah aplikasi bot dengan **Spring framework** dan terintegrasi dengan **LINE Messaging API**, **LINE Bot SDK** dan **Cloudinary image storage** untuk mengembalikan gambar yang dikirimkan oleh pengguna via LINE Chat ke aplikasi bot anda. Aplikasi ini dijalankan di **Heroku**.
 
 ### Langkah Untuk Membuat ###
-* Pertama, anda harus membuat akun LINE@, mengaktifkan Messaging API, membuat akun Cloudinary, dan memasukkan URL dari Webhook anda.
+* Pertama, anda harus membuat akun LINE@, mengaktifkan Messaging API, memasukkan URL dari Webhook anda dengan [cara ini](Integration.html), dan [membuat akun Cloudinary](cloudinary-overview.html).
 
 * Selanjutnya, tambah file  `application.properties` di direktori *src/main/resources*, dan isi dengan nama cloud, api key, dan api secret dari Cloudinary anda, serta channel secret dan channel access token anda, seperti berikut:
 
@@ -78,7 +78,7 @@ com.linecorp.channel_access_token=<your_channel_access_token>
 		]
 	}
 	```
-* Setelah selesai membuat aplikasi anda, anda dapat menjalankan aplikasi anda.
+* Setelah selesai membuat aplikasi anda, anda dapat menjalankan aplikasi anda dengan [cara ini](heroku-overview.html).
 
 ### Tautan ke git repository ###
 
