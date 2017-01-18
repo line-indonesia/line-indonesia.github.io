@@ -199,6 +199,42 @@ com.linecorp.channel_access_token=<your_channel_access_token>
     System.out.println(response.code() + " " + response.message());
 	```
 	Leave API hanya akan mengirimkan JSON kosong saat berhasil.
+* Contoh ini menggunakan `CloseableHttpAsyncClient` untuk mengambil data dari **OMDb API** karena saat menggunakan protokol `HttpClient` hanya dua request ke OMDb API yang dilayani, dan selebihnya akan menghasilkan "Request Timeout". 
+
+	```java
+	CloseableHttpAsyncClient c = HttpAsyncClients.createDefault();
+        
+	try{
+   		c.start();
+       	//Use HTTP Get to retrieve data
+       HttpGet get = new HttpGet(URI);
+            
+       Future<HttpResponse> future = c.execute(get, null);
+       HttpResponse responseGet = future.get();
+       System.out.println("HTTP executed");
+       System.out.println("HTTP Status of response: " + responseGet.getStatusLine().getStatusCode());
+            
+       // Get the response from the GET request
+       BufferedReader brd = new BufferedReader(new InputStreamReader(responseGet.getEntity().getContent()));
+            
+       StringBuffer resultGet = new StringBuffer();
+       String lineGet = "";
+       while ((lineGet = brd.readLine()) != null) {
+       		resultGet.append(lineGet);
+       }
+       System.out.println("Got result");
+            
+       // Change type of resultGet to JSONObject
+       jObjGet = resultGet.toString();
+       System.out.println("OMDb responses: " + jObjGet);
+	} catch (InterruptedException | ExecutionException e) {
+		System.out.println("Exception is raised ");
+       	e.printStackTrace();
+   } finally {
+       	c.close();
+   }
+
+	```
 
 * Setelah selesai membuat aplikasi anda, anda dapat menjalankan aplikasi anda dengan [cara ini](heroku-overview.html).
 
