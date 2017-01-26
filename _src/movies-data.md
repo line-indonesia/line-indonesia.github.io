@@ -238,6 +238,20 @@ com.linecorp.channel_access_token=<your_channel_access_token>
 
 * Setelah selesai membuat aplikasi anda, anda dapat menjalankan aplikasi anda dengan [cara ini](heroku-overview.html).
 
+### Penggunaan
+Untuk menggunakan bot ini, keyword yang dibutuhkan adalah:
+* title		: Memberikan data lengkap tentang film
+* plot		: Memberikan ringkasan film
+* poster	: Memberikan poster film
+* released	: Memberikan tanggal film ditayangkan
+* director	: Memberikan nama sutradara film
+* writer	: Memberikan nama penulis skrip film
+* actors	: Memberikan daftar pemeran utama di film
+* awards	: Memberikan daftar penghargaan yang dimenangkan film
+* carousel	: Memberikan pilihan kepada pengguna untuk data yang dapat diakses
+
+Ketik ***keyword* + "*judul*"** pada bots untuk menggunakan keyword ini
+
 ### Tautan ke git repository ###
 
 [movies-data](https://github.com/line-indonesia/movies-data)
